@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Classroom Booking</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body {
+    background: linear-gradient(135deg,#1e3c72,#2a5298);
+    display:flex;justify-content:center;align-items:center;height:100vh;
+}
+.card {width:350px;padding:20px;border-radius:20px;}
+h4{text-align:center;color:#2a5298;}
+</style>
+</head>
+
+<body>
+
+<div class="card bg-white shadow">
+<h4>lab Booking</h4>
+
+<select id="room" class="form-control mb-3">
+<option>CSE A</option>
+<option>ISE B</option>
+</select>
+
+<input type="date" class="form-control mb-3">
+
+<input type="time" id="time" class="form-control mb-2" min="09:00" max="17:00">
+<small>Select 9AM–5PM</small>
+
+<button class="btn btn-primary mt-3 w-100" onclick="check()">Check</button>
+<button class="btn btn-success mt-2 w-100" onclick="book()">Book</button>
+
+<p id="result"></p>
+</div>
+
+<script>
+let isAvailable=false;
+
+async function check(){
+let room=document.getElementById("room").value;
+let time=document.getElementById("time").value;
+
+let res=await fetch("http://127.0.0.1:5000/check",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({room,time})
+});
+
+let data=await res.json();
+
+if(data.status==="available"){
+result.innerHTML="✅ Available";
+isAvailable=true;
+}else{
+result.innerHTML="❌ Busy";
+isAvailable=false;
+}
+}
+
+async function book(){
+if(!isAvailable){alert("Check first");return;}
+
+let room=document.getElementById("room").value;
+let time=document.getElementById("time").value;
+
+await fetch("http://127.0.0.1:5000/book",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({room,time})
+});
+
+alert("Booked!");
+}
+</script>
+
+</body>
+</html>
